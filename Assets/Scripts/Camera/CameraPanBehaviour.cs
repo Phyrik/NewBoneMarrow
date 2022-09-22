@@ -9,11 +9,8 @@ public class CameraPanBehaviour : MonoBehaviour
 {
     public static Dictionary<string, CameraPanBehaviour> Instances { get; private set; }
 
-    private Camera _camera;
     private GameObject _mainCharacter;
     private Transform _mainCharacterTransform;
-    private float _mainCharacterWidth;
-    private Vector3 _targetPosition;
     private Stopwatch _stopwatch;
     
     // Start is called before the first frame update
@@ -33,11 +30,8 @@ public class CameraPanBehaviour : MonoBehaviour
         }
 
         transform.position = new Vector3(0, 0, transform.position.z);
-        _camera = GetComponent<Camera>();
         _mainCharacter = GameObject.Find("Main Character");
         _mainCharacterTransform = _mainCharacter.transform;
-        _mainCharacterWidth = _mainCharacter.GetComponent<Renderer>().bounds.size.x;
-        _targetPosition = transform.position;
 
         _stopwatch = new Stopwatch();
         _stopwatch.Reset();

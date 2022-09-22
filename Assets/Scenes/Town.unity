@@ -675,7 +675,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   dragCoefficient: 50
-  jumpSpeed: 7
+  jumpSpeed: 5
   standingSprite: {fileID: 21300000, guid: 817b617309fed854e9b6fa576b099afa, type: 3}
   walkingSprites:
   - {fileID: 21300000, guid: a5df7332a23623e4c8de08efd324cbc1, type: 3}

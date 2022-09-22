@@ -3,30 +3,58 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainCharacterMovementBehaviour : MonoBehaviour
 {
+    public static Dictionary<string, MainCharacterMovementBehaviour> Instances { get; private set; }
+
     public float speed;
     public float dragCoefficient;
     public float jumpSpeed;
     public Sprite standingSprite;
     public Sprite[] walkingSprites;
-    public BoxCollider2D bodyCollider;
     public EdgeCollider2D feetCollider;
     private Rigidbody2D _rigidbody;
     private int _currentWalkingSpriteIndex;
     private float _secondsSinceLastSpriteChange;
     private SpriteRenderer _spriteRenderer;
-    private float _secondsSinceLastJump;
+    private bool _doubleJumpUsed;
+    private bool _jumpButtonReset;
 
     // Start is called before the first frame update
     void Start()
     {
+        // singleton per scene
+        Instances ??= new Dictionary<string, MainCharacterMovementBehaviour>();
+
+        if (Instances.ContainsKey(SceneManager.GetActiveScene().name) &&
+            Instances[SceneManager.GetActiveScene().name] != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            Instances[SceneManager.GetActiveScene().name] = this;
+        }
+    
+        // set defaults for this object's attributes
         _rigidbody = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _currentWalkingSpriteIndex = 0;
         _secondsSinceLastSpriteChange = 0f;
-        _secondsSinceLastJump = 0f;
+        _doubleJumpUsed = false;
+        _jumpButtonReset = true;
+
+        if (LoadAndSaveManagerBehaviour.NeedsLoaded)
+        {
+            LoadAndSaveManagerBehaviour.NeedsLoaded = false;
+
+            // load stuff
+            _doubleJumpUsed = LoadAndSaveManagerBehaviour.CurrentSaveData.DoubleJumpUsed;
+            transform.position = new Vector3(LoadAndSaveManagerBehaviour.CurrentSaveData.MainCharacterPosX,
+                LoadAndSaveManagerBehaviour.CurrentSaveData.MainCharacterPosY, transform.position.z);
+        }
     }
 
     // Update is called once per frame
@@ -46,11 +74,12 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
         // tick clocks
         _secondsSinceLastSpriteChange += Time.deltaTime;
-        _secondsSinceLastJump += Time.deltaTime;
     }
 
     private bool CheckAndApplyHorizontalMovement()
     {
+        bool leftOrRightPressedThisFrame = false;
+        
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow))
         {
             // get new direction
@@ -69,27 +98,42 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             // apply current walking sprite
             _spriteRenderer.sprite = walkingSprites[_currentWalkingSpriteIndex];
 
-            return true;
+            leftOrRightPressedThisFrame = true;
         }
 
-        return false;
+        return leftOrRightPressedThisFrame;
     }
 
     private bool CheckAndApplyVerticalMovement()
     {
+        bool jumpPressedThisFrame = false;
+        
+        // jump pressed
         if (Input.GetKey(KeyCode.Space))
         {
-            if (TouchingGround() && _secondsSinceLastJump > 0.1f)
+            // jump if on ground or double jump available
+            if ((TouchingGround() || !_doubleJumpUsed) && _jumpButtonReset)
             {
-                _secondsSinceLastJump = 0f;
+                _jumpButtonReset = false;
+                if (!TouchingGround()) _doubleJumpUsed = true;
                 _rigidbody.position = new Vector2(_rigidbody.position.x, _rigidbody.position.y + 0.02f);
-                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, _rigidbody.velocity.y + jumpSpeed);
+                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpSpeed);
             }
             
-            return true;
+            jumpPressedThisFrame = true;
+        }
+        else
+        {
+            _jumpButtonReset = true;
+        }
+        
+        // reset double jump
+        if (TouchingGround())
+        {
+            _doubleJumpUsed = false;
         }
 
-        return false;
+        return jumpPressedThisFrame;
     }
 
     private void ApplyFriction()
