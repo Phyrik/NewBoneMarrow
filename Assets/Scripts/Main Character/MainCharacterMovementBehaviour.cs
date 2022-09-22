@@ -109,7 +109,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         bool jumpPressedThisFrame = false;
         
         // jump pressed
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.UpArrow))
         {
             // jump if on ground or double jump available
             if ((TouchingGround() || !_doubleJumpUsed) && _jumpButtonReset)
