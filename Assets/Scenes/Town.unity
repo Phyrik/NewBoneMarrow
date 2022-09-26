@@ -683,6 +683,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a5df7332a23623e4c8de08efd324cbc1, type: 3}
   - {fileID: 21300000, guid: e9b0477cf2196404096f94dc801b36ca, type: 3}
   feetCollider: {fileID: 1635170976}
+  jumpDustEffectPrefabGameObject: {fileID: 3158336297986265757, guid: 1610bcdcd6dad31439d8674d036d548c, type: 3}
 --- !u!68 &1635170976
 EdgeCollider2D:
   m_ObjectHideFlags: 0

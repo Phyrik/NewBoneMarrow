@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 public class MainCharacterMovementBehaviour : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public Sprite flyingSprite;
     public Sprite[] walkingSprites;
     public EdgeCollider2D feetCollider;
+    public GameObject jumpDustEffectPrefabGameObject;
     private Rigidbody2D _rigidbody;
     private int _currentWalkingSpriteIndex;
     private float _secondsSinceLastSpriteChange;
@@ -126,6 +128,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 if (!TouchingGround()) _doubleJumpUsed = true;
                 _rigidbody.position = new Vector2(_rigidbody.position.x, _rigidbody.position.y + 0.02f);
                 _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpSpeed);
+                Instantiate(jumpDustEffectPrefabGameObject, gameObject.transform.position, Quaternion.identity);
             }
             
             jumpPressedThisFrame = true;
