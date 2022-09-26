@@ -93,9 +93,9 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             // move in direction
             _spriteRenderer.flipX = direction == Direction.Left;
             _rigidbody.velocity = new Vector2(direction == Direction.Left // if direction is left...
-                    ? Math.Clamp(_rigidbody.velocity.x - acceleration, -maxSpeed,
+                    ? Math.Clamp(_rigidbody.velocity.x - acceleration * Time.deltaTime, -maxSpeed,
                         float.PositiveInfinity) // ...then apply negative acceleration with max negative speed clamp
-                    : Math.Clamp(_rigidbody.velocity.x + acceleration, float.NegativeInfinity,
+                    : Math.Clamp(_rigidbody.velocity.x + acceleration * Time.deltaTime, float.NegativeInfinity,
                         maxSpeed), // ...otherwise apply positive acceleration with max positive speed clamp
                 _rigidbody.velocity.y);
             // cycle walking sprites
