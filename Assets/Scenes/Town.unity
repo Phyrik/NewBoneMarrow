@@ -663,7 +663,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e28e94fc310e694281fd918d024a06e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 2.5
   groundFrictionCoefficient: 10
   airFrictionCoefficient: 6
   jumpSpeed: 5
