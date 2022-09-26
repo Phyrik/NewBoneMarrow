@@ -674,8 +674,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
-  groundFrictionCoefficient: 3
-  airFrictionCoefficient: 2
+  groundFrictionCoefficient: 10
+  airFrictionCoefficient: 6
   jumpSpeed: 5
   standingSprite: {fileID: 21300000, guid: 817b617309fed854e9b6fa576b099afa, type: 3}
   flyingSprite: {fileID: 21300000, guid: e0e5ffdcaff3e0248b00992001474192, type: 3}
