@@ -15,6 +15,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public float groundFrictionCoefficient;
     public float airFrictionCoefficient;
     public float jumpSpeed;
+    public float secondsBetweenSpriteChanges;
     public Sprite standingSprite;
     public Sprite flyingSprite;
     public Sprite[] walkingSprites;
@@ -99,7 +100,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                         maxSpeed), // ...otherwise apply positive acceleration with max positive speed clamp
                 _rigidbody.velocity.y);
             // cycle walking sprites
-            if (_secondsSinceLastSpriteChange > 0.2f)
+            if (_secondsSinceLastSpriteChange > secondsBetweenSpriteChanges)
             {
                 _secondsSinceLastSpriteChange = 0f;
                 _currentWalkingSpriteIndex = (_currentWalkingSpriteIndex + 1) % walkingSprites.Length;
