@@ -10,7 +10,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 {
     public static Dictionary<string, MainCharacterMovementBehaviour> Instances { get; private set; }
 
-    public float speed;
+    public float acceleration;
+    public float maxSpeed;
     public float groundFrictionCoefficient;
     public float airFrictionCoefficient;
     public float jumpSpeed;
@@ -91,7 +92,12 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             
             // move in direction
             _spriteRenderer.flipX = direction == Direction.Left;
-            _rigidbody.velocity = new Vector2(direction == Direction.Left ? -speed : speed, _rigidbody.velocity.y);
+            _rigidbody.velocity = new Vector2(direction == Direction.Left // if direction is left...
+                    ? Math.Clamp(_rigidbody.velocity.x - acceleration, -maxSpeed,
+                        float.PositiveInfinity) // ...then apply negative acceleration with max negative speed clamp
+                    : Math.Clamp(_rigidbody.velocity.x + acceleration, float.NegativeInfinity,
+                        maxSpeed), // ...otherwise apply positive acceleration with max positive speed clamp
+                _rigidbody.velocity.y);
             // cycle walking sprites
             if (_secondsSinceLastSpriteChange > 0.2f)
             {
