@@ -10,7 +10,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public static Dictionary<string, MainCharacterMovementBehaviour> Instances { get; private set; }
 
     public float speed;
-    public float dragCoefficient;
+    public float groundFrictionCoefficient;
+    public float airFrictionCoefficient;
     public float jumpSpeed;
     public Sprite standingSprite;
     public Sprite flyingSprite;
@@ -145,18 +146,19 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private void ApplyFriction()
     {
+        float friction = TouchingGround() ? groundFrictionCoefficient : airFrictionCoefficient;
         float newXVel = _rigidbody.velocity.x;
-        if (newXVel < dragCoefficient * Time.deltaTime && newXVel > -dragCoefficient * Time.deltaTime)
+        if (newXVel < friction * Time.deltaTime && newXVel > -friction * Time.deltaTime)
         {
             newXVel = 0f;
         }
         else if (newXVel > 0f)
         {
-            newXVel -= dragCoefficient * Time.deltaTime;
+            newXVel -= friction * Time.deltaTime;
         }
         else if (newXVel < 0f)
         {
-            newXVel += dragCoefficient * Time.deltaTime;
+            newXVel += friction * Time.deltaTime;
         }
 
         _rigidbody.velocity = new Vector2(newXVel, _rigidbody.velocity.y);
