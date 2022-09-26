@@ -677,10 +677,10 @@ MonoBehaviour:
   dragCoefficient: 50
   jumpSpeed: 5
   standingSprite: {fileID: 21300000, guid: 817b617309fed854e9b6fa576b099afa, type: 3}
+  flyingSprite: {fileID: 21300000, guid: e0e5ffdcaff3e0248b00992001474192, type: 3}
   walkingSprites:
   - {fileID: 21300000, guid: a5df7332a23623e4c8de08efd324cbc1, type: 3}
   - {fileID: 21300000, guid: e9b0477cf2196404096f94dc801b36ca, type: 3}
-  bodyCollider: {fileID: 1635170971}
   feetCollider: {fileID: 1635170976}
 --- !u!68 &1635170976
 EdgeCollider2D:

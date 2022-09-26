@@ -13,6 +13,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public float dragCoefficient;
     public float jumpSpeed;
     public Sprite standingSprite;
+    public Sprite flyingSprite;
     public Sprite[] walkingSprites;
     public EdgeCollider2D feetCollider;
     private Rigidbody2D _rigidbody;
@@ -97,6 +98,12 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
             // apply current walking sprite
             _spriteRenderer.sprite = walkingSprites[_currentWalkingSpriteIndex];
+            
+            // use normal sprite if in air
+            if (!TouchingGround())
+            {
+                _spriteRenderer.sprite = flyingSprite;
+            }
 
             leftOrRightPressedThisFrame = true;
         }
