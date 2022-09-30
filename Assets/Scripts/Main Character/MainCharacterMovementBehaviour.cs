@@ -22,6 +22,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public Sprite[] walkingSprites;
     public EdgeCollider2D feetCollider;
     public GameObject jumpDustEffectPrefabGameObject;
+    public PreventMovementCollider[] preventMovementColliders;
     private Rigidbody2D _rigidbody;
     private int _currentWalkingSpriteIndex;
     private float _secondsSinceLastSpriteChange;
@@ -208,6 +209,14 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         {
             ear.SetActive(false);
         }
+    }
+
+    [Serializable]
+    public class PreventMovementCollider
+    {
+        public Collider2D collider;
+        public bool disableLeft;
+        public bool disableRight;
     }
 }
 
