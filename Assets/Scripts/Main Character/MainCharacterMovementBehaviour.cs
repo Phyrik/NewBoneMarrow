@@ -17,13 +17,13 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public float airFrictionCoefficient;
     public float jumpSpeed;
     public float secondsBetweenSpriteChanges;
-    public GameObject[] ears;
     public Sprite standingSprite;
     public Sprite flyingSprite;
     public Sprite[] walkingSprites;
     public EdgeCollider2D feetCollider;
     public GameObject jumpDustEffectPrefabGameObject;
     public PreventMovementCollider[] preventMovementColliders;
+    public float floatingPointTolerance;
     private Rigidbody2D _rigidbody;
     private int _currentWalkingSpriteIndex;
     private float _secondsSinceLastSpriteChange;
@@ -90,7 +90,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         bool leftOrRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow);
 
         Direction velDirection = _rigidbody.velocity.x > 0f ? Direction.Right : Direction.Left;
-        bool stationary = _rigidbody.velocity.x == 0f;
+        bool stationary = _rigidbody.velocity.x > -floatingPointTolerance && _rigidbody.velocity.x < floatingPointTolerance;
         
         if (leftOrRightPressedThisFrame)
         {
@@ -126,7 +126,6 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
             // apply current walking sprite and enable waving ears
             _spriteRenderer.sprite = walkingSprites[_currentWalkingSpriteIndex];
-            EnableEars();
 
             // use normal sprite if in air and disable waving ears
             if (!IsTouchingGround())
@@ -137,7 +136,6 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         else
         {
             _spriteRenderer.sprite = IsTouchingGround() ? standingSprite : flyingSprite;
-            DisableEars();
         }
 
         return leftOrRightPressedThisFrame;
@@ -199,22 +197,6 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     private bool IsTouchingGround()
     {
         return feetCollider.IsTouchingLayers();
-    }
-
-    private void EnableEars()
-    {
-        foreach (GameObject ear in ears)
-        {
-            ear.SetActive(true);
-        }
-    }
-
-    private void DisableEars()
-    {
-        foreach (GameObject ear in ears)
-        {
-            ear.SetActive(false);
-        }
     }
 
     private bool IsLeftDisabled()
