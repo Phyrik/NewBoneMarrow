@@ -72,14 +72,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         bool movingHorizontally = CheckAndApplyHorizontalMovement();
         bool movingVertically = CheckAndApplyVerticalMovement();
         
-        if (!movingHorizontally)
-        {
-            ApplyFriction();
-
-            // reset times and sprites
-            _secondsSinceLastSpriteChange = 0f;
-            _spriteRenderer.sprite = standingSprite;
-        }
+        ApplyFriction();
 
         // tick clocks
         _secondsSinceLastSpriteChange += Time.deltaTime;
@@ -136,6 +129,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         }
         else
         {
+            // reset times and sprites
+            _secondsSinceLastSpriteChange = 0f;
             _spriteRenderer.sprite = IsTouchingGround() ? standingSprite : flyingSprite;
         }
 
