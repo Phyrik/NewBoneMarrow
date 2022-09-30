@@ -88,11 +88,12 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     private bool CheckAndApplyHorizontalMovement()
     {
         bool leftOrRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow);
+        bool leftAndRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow);
 
         Direction velDirection = _rigidbody.velocity.x > 0f ? Direction.Right : Direction.Left;
         bool stationary = _rigidbody.velocity.x > -floatingPointTolerance && _rigidbody.velocity.x < floatingPointTolerance;
         
-        if (leftOrRightPressedThisFrame)
+        if (leftOrRightPressedThisFrame && !leftAndRightPressedThisFrame)
         {
             // get new direction
             Direction accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right : Direction.Left;
