@@ -16,6 +16,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public float airFrictionCoefficient;
     public float jumpSpeed;
     public float secondsBetweenSpriteChanges;
+    public GameObject[] ears;
     public Sprite standingSprite;
     public Sprite flyingSprite;
     public Sprite[] walkingSprites;
@@ -84,21 +85,31 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private bool CheckAndApplyHorizontalMovement()
     {
-        bool leftOrRightPressedThisFrame = false;
+        bool leftOrRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow);
+
+        Direction velDirection = _rigidbody.velocity.x > 0f ? Direction.Right : Direction.Left;
+        bool stationary = _rigidbody.velocity.x == 0f;
         
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow))
+        if (leftOrRightPressedThisFrame)
         {
             // get new direction
-            Direction direction = Input.GetKey(KeyCode.RightArrow) ? Direction.Right : Direction.Left;
+            Direction accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right : Direction.Left;
             
             // move in direction
-            _spriteRenderer.flipX = direction == Direction.Left;
-            _rigidbody.velocity = new Vector2(direction == Direction.Left // if direction is left...
+            _rigidbody.velocity = new Vector2(accDirection == Direction.Left // if direction is left...
                     ? Math.Clamp(_rigidbody.velocity.x - acceleration * Time.deltaTime, -maxSpeed,
                         float.PositiveInfinity) // ...then apply negative acceleration with max negative speed clamp
                     : Math.Clamp(_rigidbody.velocity.x + acceleration * Time.deltaTime, float.NegativeInfinity,
                         maxSpeed), // ...otherwise apply positive acceleration with max positive speed clamp
                 _rigidbody.velocity.y);
+        }
+
+        if (!stationary)
+        {
+            transform.localScale = velDirection == Direction.Left
+                ? new Vector3(-Math.Abs(transform.localScale.x), transform.localScale.y, transform.localPosition.z)
+                : new Vector3(Math.Abs(transform.localScale.x), transform.localScale.y, transform.localPosition.z);
+
             // cycle walking sprites
             if (_secondsSinceLastSpriteChange > secondsBetweenSpriteChanges)
             {
@@ -106,16 +117,20 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 _currentWalkingSpriteIndex = (_currentWalkingSpriteIndex + 1) % walkingSprites.Length;
             }
 
-            // apply current walking sprite
+            // apply current walking sprite and enable waving ears
             _spriteRenderer.sprite = walkingSprites[_currentWalkingSpriteIndex];
-            
-            // use normal sprite if in air
+            EnableEars();
+
+            // use normal sprite if in air and disable waving ears
             if (!TouchingGround())
             {
                 _spriteRenderer.sprite = flyingSprite;
             }
-
-            leftOrRightPressedThisFrame = true;
+        }
+        else
+        {
+            _spriteRenderer.sprite = TouchingGround() ? standingSprite : flyingSprite;
+            DisableEars();
         }
 
         return leftOrRightPressedThisFrame;
@@ -177,6 +192,22 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     private bool TouchingGround()
     {
         return feetCollider.IsTouchingLayers();
+    }
+
+    private void EnableEars()
+    {
+        foreach (GameObject ear in ears)
+        {
+            ear.SetActive(true);
+        }
+    }
+
+    private void DisableEars()
+    {
+        foreach (GameObject ear in ears)
+        {
+            ear.SetActive(false);
+        }
     }
 }
 
