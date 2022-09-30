@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -98,10 +99,15 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             
             // move in direction
             _rigidbody.velocity = new Vector2(accDirection == Direction.Left // if direction is left...
-                    ? Math.Clamp(_rigidbody.velocity.x - acceleration * Time.deltaTime, -maxSpeed,
-                        float.PositiveInfinity) // ...then apply negative acceleration with max negative speed clamp
-                    : Math.Clamp(_rigidbody.velocity.x + acceleration * Time.deltaTime, float.NegativeInfinity,
-                        maxSpeed), // ...otherwise apply positive acceleration with max positive speed clamp
+                    ? IsLeftDisabled() // ...and left is not disabled...
+                        ? _rigidbody.velocity.x
+                        : Math.Clamp(_rigidbody.velocity.x - acceleration * Time.deltaTime, -maxSpeed,
+                            float.PositiveInfinity) // ...then apply negative acceleration with max negative speed clamp.
+                    // Otherwise if direction is right...
+                    : IsRightDisabled() // ...and right is not disabled...
+                        ? _rigidbody.velocity.x
+                        : Math.Clamp(_rigidbody.velocity.x + acceleration * Time.deltaTime, float.NegativeInfinity,
+                            maxSpeed), // ...then apply positive acceleration with max positive speed clamp
                 _rigidbody.velocity.y);
         }
 
@@ -123,14 +129,14 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             EnableEars();
 
             // use normal sprite if in air and disable waving ears
-            if (!TouchingGround())
+            if (!IsTouchingGround())
             {
                 _spriteRenderer.sprite = flyingSprite;
             }
         }
         else
         {
-            _spriteRenderer.sprite = TouchingGround() ? standingSprite : flyingSprite;
+            _spriteRenderer.sprite = IsTouchingGround() ? standingSprite : flyingSprite;
             DisableEars();
         }
 
@@ -145,10 +151,10 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         if (Input.GetKey(KeyCode.UpArrow))
         {
             // jump if on ground or double jump available
-            if ((TouchingGround() || !_doubleJumpUsed) && _jumpButtonReset)
+            if ((IsTouchingGround() || !_doubleJumpUsed) && _jumpButtonReset)
             {
                 _jumpButtonReset = false;
-                if (!TouchingGround()) _doubleJumpUsed = true;
+                if (!IsTouchingGround()) _doubleJumpUsed = true;
                 _rigidbody.position = new Vector2(_rigidbody.position.x, _rigidbody.position.y + 0.02f);
                 _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpSpeed);
                 Instantiate(jumpDustEffectPrefabGameObject, gameObject.transform.position, Quaternion.identity);
@@ -162,7 +168,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         }
         
         // reset double jump
-        if (TouchingGround())
+        if (IsTouchingGround())
         {
             _doubleJumpUsed = false;
         }
@@ -172,7 +178,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private void ApplyFriction()
     {
-        float friction = TouchingGround() ? groundFrictionCoefficient : airFrictionCoefficient;
+        float friction = IsTouchingGround() ? groundFrictionCoefficient : airFrictionCoefficient;
         float newXVel = _rigidbody.velocity.x;
         if (newXVel < friction * Time.deltaTime && newXVel > -friction * Time.deltaTime)
         {
@@ -190,7 +196,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         _rigidbody.velocity = new Vector2(newXVel, _rigidbody.velocity.y);
     }
 
-    private bool TouchingGround()
+    private bool IsTouchingGround()
     {
         return feetCollider.IsTouchingLayers();
     }
@@ -209,6 +215,16 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         {
             ear.SetActive(false);
         }
+    }
+
+    private bool IsLeftDisabled()
+    {
+        return preventMovementColliders.Where(pmc => pmc.disableLeft).Any(pmc => _rigidbody.IsTouching(pmc.collider));
+    }
+
+    private bool IsRightDisabled()
+    {
+        return preventMovementColliders.Where(pmc => pmc.disableRight).Any(pmc => _rigidbody.IsTouching(pmc.collider));
     }
 
     [Serializable]
