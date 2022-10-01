@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 public class MainCharacterMovementBehaviour : MonoBehaviour
 {
@@ -13,12 +11,15 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     public float acceleration;
     public float maxSpeed;
+    public float dashSpeed;
     public float groundFrictionCoefficient;
     public float airFrictionCoefficient;
     public float jumpSpeed;
     public float secondsBetweenSpriteChanges;
+    public float secondsToDashFor;
     public Sprite standingSprite;
     public Sprite flyingSprite;
+    public Sprite dashSprite;
     public Sprite[] walkingSprites;
     public EdgeCollider2D feetCollider;
     public GameObject jumpDustEffectPrefabGameObject;
@@ -30,6 +31,9 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private bool _doubleJumpUsed;
     private bool _jumpButtonReset;
+    private bool _dashing;
+    private float _secondsSinceDashingStarted;
+    private Direction? _dashDirection;
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +58,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         _secondsSinceLastSpriteChange = 0f;
         _doubleJumpUsed = false;
         _jumpButtonReset = true;
+        _secondsSinceDashingStarted = 0f;
+        _dashDirection = null;
 
         if (LoadAndSaveManagerBehaviour.NeedsLoaded)
         {
@@ -80,58 +86,92 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private bool CheckAndApplyHorizontalMovement()
     {
+        // get input info
         bool leftOrRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow);
         bool leftAndRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow);
 
+        // get new direction info and velocity info
+        Direction accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right : Direction.Left;
         Direction velDirection = _rigidbody.velocity.x > 0f ? Direction.Right : Direction.Left;
         bool stationary = _rigidbody.velocity.x > -floatingPointTolerance && _rigidbody.velocity.x < floatingPointTolerance;
-        
-        if (leftOrRightPressedThisFrame && !leftAndRightPressedThisFrame)
+
+        // if dashing all other horizontal physics will be ignored
+        if (!_dashing)
         {
-            // get new direction
-            Direction accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right : Direction.Left;
-            
-            // move in direction
-            _rigidbody.velocity = new Vector2(accDirection == Direction.Left // if direction is left...
-                    ? IsLeftDisabled() // ...and left is not disabled...
-                        ? _rigidbody.velocity.x
-                        : Math.Clamp(_rigidbody.velocity.x - acceleration * Time.deltaTime, -maxSpeed,
-                            float.PositiveInfinity) // ...then apply negative acceleration with max negative speed clamp.
-                    // Otherwise if direction is right...
-                    : IsRightDisabled() // ...and right is not disabled...
-                        ? _rigidbody.velocity.x
-                        : Math.Clamp(_rigidbody.velocity.x + acceleration * Time.deltaTime, float.NegativeInfinity,
-                            maxSpeed), // ...then apply positive acceleration with max positive speed clamp
-                _rigidbody.velocity.y);
-        }
-
-        if (!stationary)
-        {
-            transform.localScale = velDirection == Direction.Left
-                ? new Vector3(-Math.Abs(transform.localScale.x), transform.localScale.y, transform.localPosition.z)
-                : new Vector3(Math.Abs(transform.localScale.x), transform.localScale.y, transform.localPosition.z);
-
-            // cycle walking sprites
-            if (_secondsSinceLastSpriteChange > secondsBetweenSpriteChanges)
+            // if dashing set dashing to true
+            if (!IsTouchingGround() && Input.GetKey(KeyCode.Space))
             {
-                _secondsSinceLastSpriteChange = 0f;
-                _currentWalkingSpriteIndex = (_currentWalkingSpriteIndex + 1) % walkingSprites.Length;
+                _dashDirection = accDirection;
+                _dashing = true;
             }
-
-            // apply current walking sprite and enable waving ears
-            _spriteRenderer.sprite = walkingSprites[_currentWalkingSpriteIndex];
-
-            // use normal sprite if in air and disable waving ears
-            if (!IsTouchingGround())
+            // else do normal horizontal stuff
+            else
             {
-                _spriteRenderer.sprite = flyingSprite;
+                if (leftOrRightPressedThisFrame && !leftAndRightPressedThisFrame)
+                {
+                    // move in direction
+                    _rigidbody.velocity = new Vector2(accDirection == Direction.Left // if direction is left...
+                            ? IsLeftDisabled() // ...and left is not disabled...
+                                ? _rigidbody.velocity.x
+                                : Math.Clamp(_rigidbody.velocity.x - acceleration * Time.deltaTime, -maxSpeed,
+                                    float
+                                        .PositiveInfinity) // ...then apply negative acceleration with max negative speed clamp.
+                            // Otherwise if direction is right...
+                            : IsRightDisabled() // ...and right is not disabled...
+                                ? _rigidbody.velocity.x
+                                : Math.Clamp(_rigidbody.velocity.x + acceleration * Time.deltaTime,
+                                    float.NegativeInfinity,
+                                    maxSpeed), // ...then apply positive acceleration with max positive speed clamp
+                        _rigidbody.velocity.y);
+                }
+
+                if (!stationary)
+                {
+                    transform.localScale = velDirection == Direction.Left
+                        ? new Vector3(-Math.Abs(transform.localScale.x), transform.localScale.y,
+                            transform.localPosition.z)
+                        : new Vector3(Math.Abs(transform.localScale.x), transform.localScale.y,
+                            transform.localPosition.z);
+
+                    // cycle walking sprites
+                    if (_secondsSinceLastSpriteChange > secondsBetweenSpriteChanges)
+                    {
+                        _secondsSinceLastSpriteChange = 0f;
+                        _currentWalkingSpriteIndex = (_currentWalkingSpriteIndex + 1) % walkingSprites.Length;
+                    }
+
+                    // apply current walking sprite and enable waving ears
+                    _spriteRenderer.sprite = walkingSprites[_currentWalkingSpriteIndex];
+
+                    // use normal sprite if in air and disable waving ears
+                    if (!IsTouchingGround())
+                    {
+                        _spriteRenderer.sprite = flyingSprite;
+                    }
+                }
+                else
+                {
+                    // reset times and sprites
+                    _secondsSinceLastSpriteChange = 0f;
+                    _spriteRenderer.sprite = IsTouchingGround() ? standingSprite : flyingSprite;
+                }
             }
         }
+        // special dashing stuff
         else
         {
-            // reset times and sprites
-            _secondsSinceLastSpriteChange = 0f;
-            _spriteRenderer.sprite = IsTouchingGround() ? standingSprite : flyingSprite;
+            if (_secondsSinceDashingStarted < secondsToDashFor)
+            {
+                _spriteRenderer.sprite = dashSprite;
+                _rigidbody.velocity = new Vector2(_dashDirection.Value == Direction.Left ? -dashSpeed : dashSpeed, 0f);
+                _secondsSinceDashingStarted += Time.deltaTime;
+            }
+            else
+            {
+                _dashing = false;
+                _dashDirection = null;
+                _secondsSinceDashingStarted = 0f;
+            }
         }
 
         return leftOrRightPressedThisFrame;
