@@ -91,7 +91,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         bool leftAndRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow);
 
         // get new direction info and velocity info
-        Direction accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right : Direction.Left;
+        Direction? accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right : Input.GetKey(KeyCode.LeftArrow) ? Direction.Left : null;
         Direction velDirection = _rigidbody.velocity.x > 0f ? Direction.Right : Direction.Left;
         bool stationary = _rigidbody.velocity.x > -floatingPointTolerance && _rigidbody.velocity.x < floatingPointTolerance;
 
@@ -101,7 +101,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             // if dashing set dashing to true
             if (!IsTouchingGround() && Input.GetKey(KeyCode.Space))
             {
-                _dashDirection = accDirection;
+                _dashDirection = accDirection.Value;
                 _dashing = true;
             }
             // else do normal horizontal stuff
@@ -110,7 +110,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 if (leftOrRightPressedThisFrame && !leftAndRightPressedThisFrame)
                 {
                     // move in direction
-                    _rigidbody.velocity = new Vector2(accDirection == Direction.Left // if direction is left...
+                    _rigidbody.velocity = new Vector2(accDirection.Value == Direction.Left // if direction is left...
                             ? IsLeftDisabled() // ...and left is not disabled...
                                 ? _rigidbody.velocity.x
                                 : Math.Clamp(_rigidbody.velocity.x - acceleration * Time.deltaTime, -maxSpeed,
