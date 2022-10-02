@@ -163,7 +163,10 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             if (_secondsSinceDashingStarted < secondsToDashFor)
             {
                 _spriteRenderer.sprite = dashSprite;
-                _rigidbody.velocity = new Vector2(_dashDirection.Value == Direction.Left ? -dashSpeed : dashSpeed, 0f);
+                _rigidbody.velocity =
+                    new Vector2(
+                        _dashDirection == null ? _spriteRenderer.flipX ? -dashSpeed : dashSpeed :
+                        _dashDirection.Value == Direction.Left ? -dashSpeed : dashSpeed, 0f);
                 _secondsSinceDashingStarted += Time.deltaTime;
             }
             else
