@@ -22,7 +22,7 @@ public class DoorBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_collider.IsTouching(mainCharacterCollider))
+        if (_collider.IsTouching(mainCharacterCollider) && !Input.GetKey(KeyCode.DownArrow))
         {
             _spriteRenderer.sprite = highlightedDoorSprite;
 
