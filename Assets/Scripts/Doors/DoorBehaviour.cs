@@ -12,22 +12,36 @@ public class DoorBehaviour : MonoBehaviour
     public Sprite highlightedDoorSprite;
     private Collider2D _collider;
     private SpriteRenderer _spriteRenderer;
+    private bool _downKeyLock;
     
     // Start is called before the first frame update
     void Start()
     {
         _collider = GetComponent<Collider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        _downKeyLock = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.DownArrow) && mainCharacterCollider.IsTouching(doormatCollider) && _spriteRenderer.sprite == highlightedDoorSprite)
+        if (!mainCharacterCollider.IsTouching(doormatCollider))
         {
-            DontDestroyOnLoad(mainCharacterCollider.gameObject);
-            mainCharacterCollider.transform.position = new Vector3(0f, 0f, mainCharacterCollider.transform.position.z);
-            SceneManager.LoadSceneAsync("Main Character's House", LoadSceneMode.Single);
+            _downKeyLock = Input.GetKey(KeyCode.DownArrow);
+        }
+        
+        if (mainCharacterCollider.IsTouching(doormatCollider))
+        {
+            if (!_downKeyLock && Input.GetKey(KeyCode.DownArrow))
+            {
+                DontDestroyOnLoad(mainCharacterCollider.gameObject);
+                mainCharacterCollider.transform.position =
+                    new Vector3(0f, 0f, mainCharacterCollider.transform.position.z);
+                SceneManager.LoadSceneAsync("Main Character's House", LoadSceneMode.Single);
+            }
+
+            if (_downKeyLock && !Input.GetKey(KeyCode.DownArrow)) _downKeyLock = false;
         }
 
         _spriteRenderer.sprite = _collider.IsTouching(mainCharacterCollider) ? highlightedDoorSprite : normalDoorSprite;
