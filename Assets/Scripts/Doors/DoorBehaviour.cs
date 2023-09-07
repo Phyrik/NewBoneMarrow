@@ -35,7 +35,6 @@ public class DoorBehaviour : MonoBehaviour
         {
             if (!_downKeyLock && Input.GetKey(KeyCode.DownArrow))
             {
-                DontDestroyOnLoad(mainCharacterCollider.gameObject);
                 mainCharacterCollider.transform.position =
                     new Vector3(0f, 0f, mainCharacterCollider.transform.position.z);
                 SceneManager.LoadSceneAsync("Main Character's House", LoadSceneMode.Single);
