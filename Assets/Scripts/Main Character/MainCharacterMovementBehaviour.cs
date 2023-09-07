@@ -240,12 +240,18 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private bool IsLeftDisabled()
     {
-        return preventMovementColliders.Where(pmc => pmc.disableLeft).Any(pmc => _rigidbody.IsTouching(pmc.collider));
+        return preventMovementColliders
+            .Where(pmc => pmc.sceneName == SceneManager.GetActiveScene().name)
+            .Where(pmc => pmc.disableLeft)
+            .Any(pmc => _rigidbody.IsTouching(pmc.collider));
     }
 
     private bool IsRightDisabled()
     {
-        return preventMovementColliders.Where(pmc => pmc.disableRight).Any(pmc => _rigidbody.IsTouching(pmc.collider));
+        return preventMovementColliders
+            .Where(pmc => pmc.sceneName == SceneManager.GetActiveScene().name)
+            .Where(pmc => pmc.disableRight)
+            .Any(pmc => _rigidbody.IsTouching(pmc.collider));
     }
 
     [Serializable]
@@ -254,6 +260,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         public Collider2D collider;
         public bool disableLeft;
         public bool disableRight;
+        public string sceneName;
     }
 }
 

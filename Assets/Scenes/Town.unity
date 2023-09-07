@@ -1256,6 +1256,7 @@ MonoBehaviour:
   - collider: {fileID: 2098745806}
     disableLeft: 1
     disableRight: 0
+    sceneName: Town
   floatingPointTolerance: 0.1
 --- !u!68 &1635170976
 EdgeCollider2D:
