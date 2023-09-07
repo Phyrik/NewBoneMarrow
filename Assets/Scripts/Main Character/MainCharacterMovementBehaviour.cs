@@ -95,7 +95,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         Direction velDirection = _rigidbody.velocity.x > 0f ? Direction.Right : Direction.Left;
         bool stationary = _rigidbody.velocity.x > -floatingPointTolerance && _rigidbody.velocity.x < floatingPointTolerance;
 
-        // if dashing all other horizontal physics will be ignored
+        // if dashing all other horizontal physics will be ignored TODO: fix dashing (once per airtime)
         if (!_dashing)
         {
             // if dashing set dashing to true
