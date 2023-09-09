@@ -32,6 +32,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     private bool _doubleJumpUsed;
     private bool _jumpButtonReset;
     private bool _dashing;
+    private bool _dashUsed;
     private float _secondsSinceDashingStarted;
     private Direction? _dashDirection;
 
@@ -95,11 +96,15 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         Direction velDirection = _rigidbody.velocity.x > 0f ? Direction.Right : Direction.Left;
         bool stationary = _rigidbody.velocity.x > -floatingPointTolerance && _rigidbody.velocity.x < floatingPointTolerance;
 
-        // if dashing all other horizontal physics will be ignored TODO: fix dashing (once per airtime)
+        // if dashing all other horizontal physics will be ignored
         if (!_dashing)
         {
+            if (IsTouchingGround())
+            {
+                _dashUsed = false;
+            }
             // if dashing set dashing to true
-            if (!IsTouchingGround() && Input.GetKey(KeyCode.Space))
+            if (!IsTouchingGround() && Input.GetKey(KeyCode.Space) && accDirection != null && !_dashUsed)
             {
                 _dashDirection = accDirection.Value;
                 _dashing = true;
@@ -172,6 +177,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             else
             {
                 _dashing = false;
+                _dashUsed = true;
                 _dashDirection = null;
                 _secondsSinceDashingStarted = 0f;
             }
