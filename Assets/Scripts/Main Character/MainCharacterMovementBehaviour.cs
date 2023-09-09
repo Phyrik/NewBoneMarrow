@@ -29,10 +29,11 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     private int _currentWalkingSpriteIndex;
     private float _secondsSinceLastSpriteChange;
     private SpriteRenderer _spriteRenderer;
-    private bool _doubleJumpUsed;
+    private bool _doubleJumpUsedThisAirtime;
     private bool _jumpButtonReset;
     private bool _dashing;
-    private bool _dashUsed;
+    private bool _dashUsedThisAirtime;
+    private bool _dashKeyLock;
     private float _secondsSinceDashingStarted;
     private Direction? _dashDirection;
 
@@ -57,17 +58,18 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _currentWalkingSpriteIndex = 0;
         _secondsSinceLastSpriteChange = 0f;
-        _doubleJumpUsed = false;
+        _doubleJumpUsedThisAirtime = false;
         _jumpButtonReset = true;
         _secondsSinceDashingStarted = 0f;
         _dashDirection = null;
+        _dashKeyLock = false;
 
         if (LoadAndSaveManagerBehaviour.NeedsLoaded)
         {
             LoadAndSaveManagerBehaviour.NeedsLoaded = false;
 
             // load stuff
-            _doubleJumpUsed = LoadAndSaveManagerBehaviour.CurrentSaveData.DoubleJumpUsed;
+            _doubleJumpUsedThisAirtime = LoadAndSaveManagerBehaviour.CurrentSaveData.DoubleJumpUsed;
             transform.position = new Vector3(LoadAndSaveManagerBehaviour.CurrentSaveData.MainCharacterPosX,
                 LoadAndSaveManagerBehaviour.CurrentSaveData.MainCharacterPosY, transform.position.z);
         }
@@ -76,8 +78,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool movingHorizontally = CheckAndApplyHorizontalMovement();
-        bool movingVertically = CheckAndApplyVerticalMovement();
+        CheckAndApplyHorizontalMovement();
+        CheckAndApplyVerticalMovement();
         
         ApplyFriction();
 
@@ -85,32 +87,44 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         _secondsSinceLastSpriteChange += Time.deltaTime;
     }
 
-    private bool CheckAndApplyHorizontalMovement()
+    private void CheckAndApplyHorizontalMovement()
     {
         // get input info
         bool leftOrRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow);
         bool leftAndRightPressedThisFrame = Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.LeftArrow);
-
+        
+        // dash key lock
+        if (IsTouchingGround())
+        {
+            _dashKeyLock = Input.GetKey(KeyCode.Space);
+        }
+        
         // get new direction info and velocity info
         Direction? accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right : Input.GetKey(KeyCode.LeftArrow) ? Direction.Left : null;
         Direction velDirection = _rigidbody.velocity.x > 0f ? Direction.Right : Direction.Left;
         bool stationary = _rigidbody.velocity.x > -floatingPointTolerance && _rigidbody.velocity.x < floatingPointTolerance;
 
-        // if dashing all other horizontal physics will be ignored
+        // reset dash once on ground
+        if (IsTouchingGround())
+        {
+            _dashUsedThisAirtime = false;
+        }
+        
         if (!_dashing)
         {
-            if (IsTouchingGround())
-            {
-                _dashUsed = false;
-            }
             // if dashing set dashing to true
-            if (!IsTouchingGround() && Input.GetKey(KeyCode.Space) && accDirection != null && !_dashUsed)
+            if (!IsTouchingGround())
             {
-                _dashDirection = accDirection.Value;
-                _dashing = true;
+                if (Input.GetKey(KeyCode.Space) && accDirection != null && !_dashUsedThisAirtime && !_dashKeyLock)
+                {
+                    _dashDirection = accDirection.Value;
+                    _dashing = true;
+                }
+
+                if (_dashKeyLock && !Input.GetKey(KeyCode.Space)) _dashKeyLock = false;
             }
             // else do normal horizontal stuff
-            else
+            if (!_dashing)
             {
                 if (leftOrRightPressedThisFrame && !leftAndRightPressedThisFrame)
                 {
@@ -162,7 +176,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 }
             }
         }
-        // special dashing stuff
+        // if dashing all other horizontal physics will be ignored
         else
         {
             if (_secondsSinceDashingStarted < secondsToDashFor)
@@ -177,33 +191,27 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
             else
             {
                 _dashing = false;
-                _dashUsed = true;
+                _dashUsedThisAirtime = true;
                 _dashDirection = null;
                 _secondsSinceDashingStarted = 0f;
             }
         }
-
-        return leftOrRightPressedThisFrame;
     }
 
-    private bool CheckAndApplyVerticalMovement()
+    private void CheckAndApplyVerticalMovement()
     {
-        bool jumpPressedThisFrame = false;
-        
         // jump pressed
         if (Input.GetKey(KeyCode.UpArrow))
         {
             // jump if on ground or double jump available
-            if ((IsTouchingGround() || !_doubleJumpUsed) && _jumpButtonReset)
+            if ((IsTouchingGround() || !_doubleJumpUsedThisAirtime) && _jumpButtonReset)
             {
                 _jumpButtonReset = false;
-                if (!IsTouchingGround()) _doubleJumpUsed = true;
+                if (!IsTouchingGround()) _doubleJumpUsedThisAirtime = true;
                 _rigidbody.position = new Vector2(_rigidbody.position.x, _rigidbody.position.y + 0.02f);
                 _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpSpeed);
                 Instantiate(jumpDustEffectPrefabGameObject, gameObject.transform.position, Quaternion.identity);
             }
-            
-            jumpPressedThisFrame = true;
         }
         else
         {
@@ -213,10 +221,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         // reset double jump
         if (IsTouchingGround())
         {
-            _doubleJumpUsed = false;
+            _doubleJumpUsedThisAirtime = false;
         }
-
-        return jumpPressedThisFrame;
     }
 
     private void ApplyFriction()

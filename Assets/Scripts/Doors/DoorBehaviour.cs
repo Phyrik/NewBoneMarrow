@@ -19,7 +19,6 @@ public class DoorBehaviour : MonoBehaviour
     {
         _collider = GetComponent<Collider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        
         _downKeyLock = false;
     }
 
