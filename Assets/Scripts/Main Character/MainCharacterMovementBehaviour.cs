@@ -82,8 +82,6 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         CheckAndApplyHorizontalMovement();
         CheckAndApplyVerticalMovement();
         
-        Debug.Log($"Hor. vel.: {_rigidbody.velocity.x}");
-        
         ApplyFriction();
 
         // tick clocks
