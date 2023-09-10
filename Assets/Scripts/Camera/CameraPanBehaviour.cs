@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
@@ -7,14 +6,13 @@ using UnityEngine.SceneManagement;
 
 public class CameraPanBehaviour : MonoBehaviour
 {
-    public static Dictionary<string, CameraPanBehaviour> Instances { get; private set; }
-
     private GameObject _mainCharacter;
     private Transform _mainCharacterTransform;
     private Stopwatch _stopwatch;
-    
+    public static Dictionary<string, CameraPanBehaviour> Instances { get; private set; }
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         // singleton per scene
         Instances ??= new Dictionary<string, CameraPanBehaviour>();
@@ -39,7 +37,7 @@ public class CameraPanBehaviour : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         Vector3 mainCharacterPosition = _mainCharacterTransform.position;
         transform.position = new Vector3(Math.Clamp(mainCharacterPosition.x, 0f, float.PositiveInfinity),

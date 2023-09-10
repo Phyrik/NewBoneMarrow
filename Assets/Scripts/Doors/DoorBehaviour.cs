@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 public class DoorBehaviour : MonoBehaviour
 {
@@ -11,11 +8,11 @@ public class DoorBehaviour : MonoBehaviour
     public Sprite normalDoorSprite;
     public Sprite highlightedDoorSprite;
     private Collider2D _collider;
-    private SpriteRenderer _spriteRenderer;
     private bool _downKeyLock;
-    
+    private SpriteRenderer _spriteRenderer;
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         _collider = GetComponent<Collider2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -23,13 +20,13 @@ public class DoorBehaviour : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (!mainCharacterCollider.IsTouching(doormatCollider))
         {
             _downKeyLock = Input.GetKey(KeyCode.DownArrow);
         }
-        
+
         if (mainCharacterCollider.IsTouching(doormatCollider))
         {
             if (!_downKeyLock && Input.GetKey(KeyCode.DownArrow))
@@ -39,7 +36,10 @@ public class DoorBehaviour : MonoBehaviour
                 SceneManager.LoadSceneAsync("Main Character's House", LoadSceneMode.Single);
             }
 
-            if (_downKeyLock && !Input.GetKey(KeyCode.DownArrow)) _downKeyLock = false;
+            if (_downKeyLock && !Input.GetKey(KeyCode.DownArrow))
+            {
+                _downKeyLock = false;
+            }
         }
 
         _spriteRenderer.sprite = _collider.IsTouching(mainCharacterCollider) ? highlightedDoorSprite : normalDoorSprite;

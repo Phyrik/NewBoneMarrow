@@ -1,12 +1,10 @@
-﻿using System.IO;
-using Newtonsoft.Json;
-using UnityEngine;
+﻿using Newtonsoft.Json;
 
 public class SaveData
 {
     // scene
     public string SceneName { get; set; }
-    
+
     // main character movement and location data
     public float MainCharacterPosX { get; set; }
     public float MainCharacterPosY { get; set; }

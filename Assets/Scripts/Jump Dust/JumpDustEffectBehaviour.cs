@@ -1,17 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class JumpDustEffectBehaviour : MonoBehaviour
 {
     public float secondsBetweenSpriteChanges;
     public Sprite[] jumpDustEffectSprites;
-    private SpriteRenderer _spriteRenderer;
-    private float _secondsSinceLastSpriteChange;
     private int _currentSpriteIndex;
+    private float _secondsSinceLastSpriteChange;
+    private SpriteRenderer _spriteRenderer;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _spriteRenderer.sprite = jumpDustEffectSprites[0];
@@ -19,7 +17,7 @@ public class JumpDustEffectBehaviour : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         _secondsSinceLastSpriteChange += Time.deltaTime;
 
@@ -31,6 +29,7 @@ public class JumpDustEffectBehaviour : MonoBehaviour
                 Destroy(gameObject);
                 return;
             }
+
             _spriteRenderer.sprite = jumpDustEffectSprites[_currentSpriteIndex];
             _secondsSinceLastSpriteChange = 0f;
         }

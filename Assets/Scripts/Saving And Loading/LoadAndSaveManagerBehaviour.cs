@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,14 +6,12 @@ public class LoadAndSaveManagerBehaviour : MonoBehaviour
 {
     public static string SaveDirectory { get; private set; }
     public static string SaveFilePath { get; private set; }
-    
     public static LoadAndSaveManagerBehaviour Instance { get; private set; }
-    
     public static bool NeedsLoaded { get; set; }
     public static SaveData CurrentSaveData { get; private set; }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         if (Instance != null)
         {
