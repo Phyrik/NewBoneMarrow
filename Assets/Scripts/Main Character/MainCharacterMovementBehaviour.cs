@@ -102,11 +102,10 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         // get new direction info and velocity info
         Direction? accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right :
             Input.GetKey(KeyCode.LeftArrow) ? Direction.Left : null;
-        Direction velDirection = _rigidbody.velocity.x > 0f + floatingPointTolerance ? Direction.Right :
-            _rigidbody.velocity.x < 0f - floatingPointTolerance ? Direction.Left :
+        Direction velDirection = IsFloatGreaterThan(_rigidbody.velocity.x, 0f) ? Direction.Right :
+            IsFloatLessThan(_rigidbody.velocity.x, 0f) ? Direction.Left :
             _spriteRenderer.flipX ? Direction.Left : Direction.Right;
-        bool stationary = _rigidbody.velocity.x > -floatingPointTolerance &&
-                          _rigidbody.velocity.x < floatingPointTolerance;
+        bool stationary = IsFloatEqualTo(_rigidbody.velocity.x, 0f);
 
         // reset dash once on ground
         if (IsTouchingGround())
@@ -130,6 +129,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 {
                     _dashDirection = accDirection ?? velDirection;
                     _dashing = true;
+                    _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
                 }
 
                 if (_dashKeyLock && !Input.GetKey(KeyCode.Space))
@@ -198,7 +198,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 _spriteRenderer.flipX = _dashDirection.Value == Direction.Left;
                 _rigidbody.velocity =
                     new Vector2(
-                        _dashDirection.Value == Direction.Left ? -dashSpeed : dashSpeed, 0f);
+                        _dashDirection.Value == Direction.Left ? -dashSpeed : dashSpeed, Math.Clamp(_rigidbody.velocity.y, 0f, float.PositiveInfinity));
                 _secondsSinceDashingStarted += Time.deltaTime;
             }
             else
@@ -214,6 +214,12 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private void CheckAndApplyVerticalMovement()
     {
+        // reset double jump
+        if (IsTouchingGround())
+        {
+            _doubleJumpUsedThisAirtime = false;
+        }
+        
         // jump pressed
         if (Input.GetKey(KeyCode.UpArrow))
         {
@@ -234,12 +240,6 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         else
         {
             _jumpButtonReset = true;
-        }
-
-        // reset double jump
-        if (IsTouchingGround())
-        {
-            _doubleJumpUsedThisAirtime = false;
         }
     }
 
@@ -288,6 +288,22 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         public bool disableLeft;
         public bool disableRight;
         public string sceneName;
+    }
+    
+    private bool IsFloatEqualTo(float floatValue, float comparisonValue)
+    {
+        return floatValue > comparisonValue - floatingPointTolerance &&
+               floatValue < comparisonValue + floatingPointTolerance;
+    }
+
+    private bool IsFloatGreaterThan(float floatValue, float comparisonValue)
+    {
+        return floatValue > comparisonValue - floatingPointTolerance;
+    }
+
+    private bool IsFloatLessThan(float floatValue, float comparisonValue)
+    {
+        return floatValue < comparisonValue + floatingPointTolerance;
     }
 }
 

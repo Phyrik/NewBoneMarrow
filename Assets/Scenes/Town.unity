@@ -1484,7 +1484,7 @@ MonoBehaviour:
   dashSpeed: 6
   groundFrictionCoefficient: 10
   airFrictionCoefficient: 6
-  dashedAirFrictionCoefficient: 3
+  dashedAirFrictionCoefficient: 4
   jumpSpeed: 5
   secondsBetweenSpriteChanges: 0.1
   secondsToDashFor: 0.3
