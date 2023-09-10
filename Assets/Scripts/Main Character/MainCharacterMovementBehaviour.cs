@@ -11,6 +11,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public float dashSpeed;
     public float groundFrictionCoefficient;
     public float airFrictionCoefficient;
+    public float dashedAirFrictionCoefficient;
     public float jumpSpeed;
     public float secondsBetweenSpriteChanges;
     public float secondsToDashFor;
@@ -112,11 +113,12 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         {
             _dashUsedThisAirtime = false;
         }
-
-        // check if just finished dashing
-        _justDashed = _dashUsedThisAirtime && !IsTouchingGround() &&
-                      (_rigidbody.velocity.x > dashSpeed - floatingPointTolerance ||
-                       _rigidbody.velocity.x < -dashSpeed + floatingPointTolerance);
+        
+        // check if not just dashed
+        if (!_dashUsedThisAirtime || Input.GetKey(KeyCode.Space))
+        {
+            _justDashed = false;
+        }
 
         if (!_dashing)
         {
@@ -205,6 +207,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 _dashUsedThisAirtime = true;
                 _dashDirection = null;
                 _secondsSinceDashingStarted = 0f;
+                _justDashed = true;
             }
         }
     }
@@ -242,25 +245,23 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private void ApplyFriction()
     {
-        if (!_justDashed)
+        float friction = _justDashed ? dashedAirFrictionCoefficient :
+            IsTouchingGround() ? groundFrictionCoefficient : airFrictionCoefficient;
+        float newXVel = _rigidbody.velocity.x;
+        if (newXVel < friction * Time.deltaTime && newXVel > -friction * Time.deltaTime)
         {
-            float friction = IsTouchingGround() ? groundFrictionCoefficient : airFrictionCoefficient;
-            float newXVel = _rigidbody.velocity.x;
-            if (newXVel < friction * Time.deltaTime && newXVel > -friction * Time.deltaTime)
-            {
-                newXVel = 0f;
-            }
-            else if (newXVel > 0f)
-            {
-                newXVel -= friction * Time.deltaTime;
-            }
-            else if (newXVel < 0f)
-            {
-                newXVel += friction * Time.deltaTime;
-            }
-
-            _rigidbody.velocity = new Vector2(newXVel, _rigidbody.velocity.y);
+            newXVel = 0f;
         }
+        else if (newXVel > 0f)
+        {
+            newXVel -= friction * Time.deltaTime;
+        }
+        else if (newXVel < 0f)
+        {
+            newXVel += friction * Time.deltaTime;
+        }
+
+        _rigidbody.velocity = new Vector2(newXVel, _rigidbody.velocity.y);
     }
 
     private bool IsTouchingGround()
