@@ -84,8 +84,6 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         CheckAndApplyVerticalMovement();
 
         ApplyFriction();
-        
-        Debug.Log(_rigidbody.velocity.x);
 
         // tick clocks
         _secondsSinceLastSpriteChange += Time.deltaTime;
@@ -213,7 +211,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 _rigidbody.velocity =
                     new Vector2(
                         (_dashDirection.Value == Direction.Left ? -dashSpeed : dashSpeed) * transform.localScale.x * 5f,
-                        Math.Clamp(_rigidbody.velocity.y, 0f, float.PositiveInfinity) * transform.localScale.y * 5f);
+                        Math.Clamp(_rigidbody.velocity.y, 0f, float.PositiveInfinity));
                 _secondsSinceDashingStarted += Time.deltaTime;
             }
             else
@@ -260,8 +258,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private void ApplyFriction()
     {
-        float friction = _justDashed ? dashedAirFrictionCoefficient :
-            IsTouchingGround() ? groundFrictionCoefficient : airFrictionCoefficient;
+        float friction = (_justDashed ? dashedAirFrictionCoefficient :
+            IsTouchingGround() ? groundFrictionCoefficient : airFrictionCoefficient) * transform.localScale.x * 5f;
         float newXVel = _rigidbody.velocity.x;
         if (newXVel < friction * Time.deltaTime && newXVel > -friction * Time.deltaTime)
         {
