@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class MainCharacterMovementBehaviour : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public Sprite dashSprite;
     public Sprite[] walkingSprites;
     public EdgeCollider2D feetCollider;
-    public GameObject jumpDustEffectPrefabGameObject;
+    public GameObject dustEffectPrefabGameObject;
     public PreventMovementCollider[] preventMovementColliders;
     public float floatingPointTolerance;
     private int _currentWalkingSpriteIndex;
@@ -102,9 +103,14 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         // get new direction info and velocity info
         Direction? accDirection = Input.GetKey(KeyCode.RightArrow) ? Direction.Right :
             Input.GetKey(KeyCode.LeftArrow) ? Direction.Left : null;
-        Direction velDirection = IsFloatGreaterThan(_rigidbody.velocity.x, 0f) ? Direction.Right :
-            IsFloatLessThan(_rigidbody.velocity.x, 0f) ? Direction.Left :
-            _spriteRenderer.flipX ? Direction.Left : Direction.Right;
+        Direction velDirection = IsFloatEqualTo(_rigidbody.velocity.x, 0f)
+            ?
+            _spriteRenderer.flipX ? Direction.Left : Direction.Right
+            : IsFloatGreaterThan(_rigidbody.velocity.x, 0f)
+                ? Direction.Right
+                : IsFloatLessThan(_rigidbody.velocity.x, 0f)
+                    ? Direction.Left
+                    : throw new Exception();
         bool stationary = IsFloatEqualTo(_rigidbody.velocity.x, 0f);
 
         // reset dash once on ground
@@ -130,6 +136,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                     _dashDirection = accDirection ?? velDirection;
                     _dashing = true;
                     _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
+                    Instantiate(dustEffectPrefabGameObject, gameObject.transform.position,
+                        Quaternion.AngleAxis(90f, _dashDirection == Direction.Right ? Vector3.forward : Vector3.back));
                 }
 
                 if (_dashKeyLock && !Input.GetKey(KeyCode.Space))
@@ -234,7 +242,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
                 _rigidbody.position = new Vector2(_rigidbody.position.x, _rigidbody.position.y + 0.02f);
                 _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpSpeed);
-                Instantiate(jumpDustEffectPrefabGameObject, gameObject.transform.position, Quaternion.identity);
+                Instantiate(dustEffectPrefabGameObject, gameObject.transform.position, Quaternion.identity);
             }
         }
         else

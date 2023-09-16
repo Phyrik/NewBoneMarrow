@@ -1104,8 +1104,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1065181698}
   - component: {fileID: 1065181697}
+  - component: {fileID: 1065181699}
   m_Layer: 0
-  m_Name: Music Player
+  m_Name: Music Player 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1121,8 +1122,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c4323aeb97caca9f7b0af81b3e09422a, type: 3}
-  m_PlayOnAwake: 1
+  m_audioClip: {fileID: 8300000, guid: 1a5671aec32ccbc87b32658c5db97edc, type: 3}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -1222,6 +1223,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1065181699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1065181696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89982405c85c2f23aa9dcada59f539e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playSecondsFromStart: 0
 --- !u!1 &1264397143
 GameObject:
   m_ObjectHideFlags: 0
@@ -1495,7 +1509,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: a5df7332a23623e4c8de08efd324cbc1, type: 3}
   - {fileID: 21300000, guid: e9b0477cf2196404096f94dc801b36ca, type: 3}
   feetCollider: {fileID: 1635170976}
-  jumpDustEffectPrefabGameObject: {fileID: 3158336297986265757, guid: 1610bcdcd6dad31439d8674d036d548c, type: 3}
+  dustEffectPrefabGameObject: {fileID: 3158336297986265757, guid: 1610bcdcd6dad31439d8674d036d548c, type: 3}
   preventMovementColliders:
   - collider: {fileID: 2098745806}
     disableLeft: 1

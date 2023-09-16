@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class JumpDustEffectBehaviour : MonoBehaviour
+public class DustEffectBehaviour : MonoBehaviour
 {
     public float secondsBetweenSpriteChanges;
     public Sprite[] jumpDustEffectSprites;
