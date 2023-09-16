@@ -22,6 +22,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
     public Sprite[] walkingSprites;
     public EdgeCollider2D feetCollider;
     public GameObject dustEffectPrefabGameObject;
+    public float dustCloseness;
     public PreventMovementCollider[] preventMovementColliders;
     public float floatingPointTolerance;
     private int _currentWalkingSpriteIndex;
@@ -136,7 +137,6 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                     _dashDirection = accDirection ?? velDirection;
                     _dashing = true;
                     _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
-                    float dustCloseness = 0.5f;
                     Instantiate(dustEffectPrefabGameObject,
                         new Vector3(transform.position.x + (_dashDirection == Direction.Left ? -dustCloseness : dustCloseness),
                             transform.position.y, transform.position.z),

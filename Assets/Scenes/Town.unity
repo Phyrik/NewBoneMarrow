@@ -1510,6 +1510,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e9b0477cf2196404096f94dc801b36ca, type: 3}
   feetCollider: {fileID: 1635170976}
   dustEffectPrefabGameObject: {fileID: 3158336297986265757, guid: 1610bcdcd6dad31439d8674d036d548c, type: 3}
+  dustCloseness: 0.4
   preventMovementColliders:
   - collider: {fileID: 2098745806}
     disableLeft: 1
