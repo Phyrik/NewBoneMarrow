@@ -4,12 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class MainCharacterBackgroundBehaviour : MonoBehaviour
 {
-    private Dictionary<string, float> _sceneSizeDictionary;
+    public static Dictionary<string, float> SceneSizeDictionary { get; private set; }
 
     // Start is called before the first frame update
     private void Start()
     {
-        _sceneSizeDictionary = new Dictionary<string, float>
+        SceneSizeDictionary = new Dictionary<string, float>
         {
             {"Town", 0.2f},
             {"Main Character's House", 0.35f}
@@ -28,7 +28,7 @@ public class MainCharacterBackgroundBehaviour : MonoBehaviour
     private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
         Transform transform1 = transform;
-        transform1.localScale = new Vector3(_sceneSizeDictionary[scene.name], _sceneSizeDictionary[scene.name],
+        transform1.localScale = new Vector3(SceneSizeDictionary[scene.name], SceneSizeDictionary[scene.name],
             transform1.localScale.z);
     }
 }
