@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 public class MainCharacterBackgroundBehaviour : MonoBehaviour
 {
     public static Dictionary<string, float> SceneSizeDictionary { get; private set; }
+    private Dictionary<string, float> _sceneGravityDictionary;
+    private Rigidbody2D _rigidbody;
 
     // Start is called before the first frame update
     private void Start()
@@ -14,6 +16,13 @@ public class MainCharacterBackgroundBehaviour : MonoBehaviour
             {"Town", 0.2f},
             {"Main Character's House", 0.35f}
         };
+        _sceneGravityDictionary = new Dictionary<string, float>
+        {
+            {"Town", 1f},
+            {"Main Character's House", 2f}
+        };
+
+        _rigidbody = GetComponent<Rigidbody2D>();
 
         DontDestroyOnLoad(gameObject);
 
@@ -27,8 +36,8 @@ public class MainCharacterBackgroundBehaviour : MonoBehaviour
 
     private void SceneManagerOnsceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        Transform transform1 = transform;
-        transform1.localScale = new Vector3(SceneSizeDictionary[scene.name], SceneSizeDictionary[scene.name],
-            transform1.localScale.z);
+        transform.localScale = new Vector3(SceneSizeDictionary[scene.name], SceneSizeDictionary[scene.name],
+            transform.localScale.z);
+        _rigidbody.gravityScale = _sceneGravityDictionary[scene.name];
     }
 }
