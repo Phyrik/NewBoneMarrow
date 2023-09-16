@@ -84,6 +84,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
         CheckAndApplyVerticalMovement();
 
         ApplyFriction();
+        
+        Debug.Log(_rigidbody.velocity.x);
 
         // tick clocks
         _secondsSinceLastSpriteChange += Time.deltaTime;
@@ -158,18 +160,19 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                             : Input.GetKey(KeyCode.RightArrow))))
                 {
                     // move in direction
-                    _rigidbody.velocity = new Vector2(accDirection.Value == Direction.Left // if direction is left...
-                            ? IsLeftDisabled() // ...and left is not disabled...
+                    _rigidbody.velocity = new Vector2(
+                        accDirection.Value == Direction.Left
+                            ?
+                            IsLeftDisabled()
                                 ? _rigidbody.velocity.x
-                                : Math.Clamp(_rigidbody.velocity.x - acceleration * Time.deltaTime, -maxSpeed,
-                                    float
-                                        .PositiveInfinity) // ...then apply negative acceleration with max negative speed clamp.
-                            // Otherwise if direction is right...
-                            : IsRightDisabled() // ...and right is not disabled...
+                                : Math.Clamp(
+                                    _rigidbody.velocity.x - acceleration * transform.localScale.x * 5f * Time.deltaTime,
+                                    -maxSpeed * transform.localScale.x * 5f, float.PositiveInfinity)
+                            : IsRightDisabled()
                                 ? _rigidbody.velocity.x
-                                : Math.Clamp(_rigidbody.velocity.x + acceleration * Time.deltaTime,
-                                    float.NegativeInfinity,
-                                    maxSpeed), // ...then apply positive acceleration with max positive speed clamp
+                                : Math.Clamp(
+                                    _rigidbody.velocity.x + acceleration * transform.localScale.x * 5f * Time.deltaTime,
+                                    float.NegativeInfinity, maxSpeed * transform.localScale.x * 5f),
                         _rigidbody.velocity.y);
                 }
 
@@ -209,7 +212,8 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 _spriteRenderer.flipX = _dashDirection.Value == Direction.Left;
                 _rigidbody.velocity =
                     new Vector2(
-                        _dashDirection.Value == Direction.Left ? -dashSpeed : dashSpeed, Math.Clamp(_rigidbody.velocity.y, 0f, float.PositiveInfinity));
+                        (_dashDirection.Value == Direction.Left ? -dashSpeed : dashSpeed) * transform.localScale.x * 5f,
+                        Math.Clamp(_rigidbody.velocity.y, 0f, float.PositiveInfinity) * transform.localScale.y * 5f);
                 _secondsSinceDashingStarted += Time.deltaTime;
             }
             else
@@ -244,7 +248,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                 }
 
                 _rigidbody.position = new Vector2(_rigidbody.position.x, _rigidbody.position.y + 0.02f);
-                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpSpeed);
+                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpSpeed * transform.localScale.x * 5f);
                 Instantiate(dustEffectPrefabGameObject, transform.position, Quaternion.identity);
             }
         }
