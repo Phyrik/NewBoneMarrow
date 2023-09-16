@@ -136,8 +136,10 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
                     _dashDirection = accDirection ?? velDirection;
                     _dashing = true;
                     _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
-                    Instantiate(dustEffectPrefabGameObject, gameObject.transform.position,
-                        Quaternion.AngleAxis(90f, _dashDirection == Direction.Right ? Vector3.forward : Vector3.back));
+                    Instantiate(dustEffectPrefabGameObject,
+                        new Vector3(transform.position.x + (_dashDirection == Direction.Left ? -0.2f : 0.2f),
+                            transform.position.y, transform.position.z),
+                        Quaternion.AngleAxis(90f, _dashDirection == Direction.Left ? Vector3.forward : Vector3.back));
                 }
 
                 if (_dashKeyLock && !Input.GetKey(KeyCode.Space))
@@ -242,7 +244,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
                 _rigidbody.position = new Vector2(_rigidbody.position.x, _rigidbody.position.y + 0.02f);
                 _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, jumpSpeed);
-                Instantiate(dustEffectPrefabGameObject, gameObject.transform.position, Quaternion.identity);
+                Instantiate(dustEffectPrefabGameObject, transform.position, Quaternion.identity);
             }
         }
         else
