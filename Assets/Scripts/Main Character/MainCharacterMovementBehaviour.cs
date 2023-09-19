@@ -284,23 +284,31 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private bool IsLeftDisabled()
     {
-        return preventMovementColliders.Where(pmc => pmc.sceneName == SceneManager.GetActiveScene().name)
-            .Where(pmc => pmc.disableLeft).Any(pmc => _rigidbody.IsTouching(pmc.collider));
+        return preventMovementColliders.Where(pmc => pmc.DisableLeft).Any(pmc => _rigidbody.IsTouching(pmc.Collider));
     }
 
     private bool IsRightDisabled()
     {
-        return preventMovementColliders.Where(pmc => pmc.sceneName == SceneManager.GetActiveScene().name)
-            .Where(pmc => pmc.disableRight).Any(pmc => _rigidbody.IsTouching(pmc.collider));
+        return preventMovementColliders.Where(pmc => pmc.DisableRight).Any(pmc => _rigidbody.IsTouching(pmc.Collider));
     }
 
-    [Serializable]
     public class PreventMovementCollider
     {
-        public Collider2D collider;
-        public bool disableLeft;
-        public bool disableRight;
-        public string sceneName;
+        private string GameObjectName;
+        public bool DisableLeft;
+        public bool DisableRight;
+        
+        public PreventMovementCollider(string gameObjectName, bool disableLeft, bool disableRight)
+        {
+            GameObjectName = gameObjectName;
+            DisableLeft = disableLeft;
+            DisableRight = disableRight;
+        }
+        
+        public Collider2D Collider
+        {
+            get { return GameObject.Find(GameObjectName).GetComponent<Collider2D>(); }
+        }
     }
     
     private bool IsFloatEqualTo(float floatValue, float comparisonValue)
