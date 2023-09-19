@@ -1345,7 +1345,7 @@ Transform:
   m_GameObject: {fileID: 1635170970}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.102, y: -2.564, z: -1}
+  m_LocalPosition: {x: 0.13, y: -2.33, z: -1}
   m_LocalScale: {x: 0.2, y: 0.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1381,11 +1381,6 @@ MonoBehaviour:
   feetCollider: {fileID: 1635170976}
   dustEffectPrefabGameObject: {fileID: 3158336297986265757, guid: 1610bcdcd6dad31439d8674d036d548c, type: 3}
   dustCloseness: 0.3
-  preventMovementColliders:
-  - collider: {fileID: 2098745806}
-    disableLeft: 1
-    disableRight: 0
-    sceneName: Town
   floatingPointTolerance: 0.1
 --- !u!68 &1635170976
 EdgeCollider2D:
