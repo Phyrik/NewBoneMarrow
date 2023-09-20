@@ -241,7 +241,7 @@ GameObject:
   - component: {fileID: 256686532}
   - component: {fileID: 256686531}
   - component: {fileID: 256686530}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Stilts
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -441,7 +441,7 @@ GameObject:
   - component: {fileID: 323540073}
   - component: {fileID: 323540072}
   - component: {fileID: 323540074}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -573,7 +573,7 @@ GameObject:
   - component: {fileID: 438365039}
   - component: {fileID: 438365038}
   - component: {fileID: 438365037}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Stilts In Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -775,7 +775,7 @@ GameObject:
   - component: {fileID: 662192449}
   - component: {fileID: 662192448}
   - component: {fileID: 662192447}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Ledge
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -279,7 +279,7 @@ public class MainCharacterMovementBehaviour : MonoBehaviour
 
     private bool IsTouchingGround()
     {
-        return feetCollider.IsTouchingLayers();
+        return feetCollider.IsTouchingLayers(1 << LayerMask.NameToLayer("Ground"));
     }
 
     private bool IsLeftDisabled()
