@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,6 +10,9 @@ public class MainCharacterBackgroundBehaviour : MonoBehaviour
     private Dictionary<string, MainCharacterMovementBehaviour.PreventMovementCollider[]> _scenePreventMovementCollidersDictionary;
     private Rigidbody2D _rigidbody;
     private MainCharacterMovementBehaviour _mainCharacterMovementBehaviour;
+
+    public GameObject mainCanvas;
+    public GameObject mainCharacterWindow; // TODO
 
     // Start is called before the first frame update
     private void Start()
@@ -49,5 +53,11 @@ public class MainCharacterBackgroundBehaviour : MonoBehaviour
             transform.localScale.z);
         _rigidbody.gravityScale = _sceneGravityDictionary[scene.name];
         _mainCharacterMovementBehaviour.preventMovementColliders = _scenePreventMovementCollidersDictionary[scene.name];
+    }
+
+    private void Update()
+    {
+        Vector3 windowPosition = Camera.main.WorldToScreenPoint(transform.position);
+        mainCharacterWindow.GetComponent<RectTransform>().anchoredPosition = new Vector2(windowPosition.x, -(mainCanvas.GetComponent<RectTransform>().rect.height - windowPosition.y));
     }
 }
